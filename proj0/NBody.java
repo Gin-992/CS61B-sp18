@@ -59,7 +59,5 @@ public class NBody {
                     allPlanets[i].xxPos, allPlanets[i].yyPos, allPlanets[i].xxVel,
                     allPlanets[i].yyVel, allPlanets[i].mass, allPlanets[i].imgFileName);
         }
-
-
     }
 }

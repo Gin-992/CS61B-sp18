@@ -28,7 +28,7 @@ public class Planet {
     }
 
     // G 只能被赋值一次
-    public static final double G = 6.67e-11;
+    private static final double G = 6.67e-11;
 
     public double calcForceExertedBy (Planet p) {
         double r = calcDistance(p);
