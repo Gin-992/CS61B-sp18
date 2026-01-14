@@ -13,6 +13,7 @@ public class DebugExercise3 {
                 int newTotal = totalTurnips + numAvailable;
                 totalTurnips = newTotal;
             }
+            // 读取换行符
             in.readLine();
         }
         return totalTurnips;
