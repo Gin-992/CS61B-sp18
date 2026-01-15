@@ -4,6 +4,7 @@ public class LinkedListDeque<T> {
         public Node prev;
         public Node next;
 
+        // 构造函数不能写返回值类型
         public Node (T i, Node p, Node n) {
             this.item = i;
             this.prev = p;
@@ -11,11 +12,19 @@ public class LinkedListDeque<T> {
         }
     }
 
-    private Node sentinel;
+    private Node sentinel = new Node(null, null, null);
     private int size = 0;
 
+    // 构造函数不能写返回值类型
+    public LinkedListDeque (T t) {
+        sentinel.next = new Node(t, null, null);
+        sentinel.next.prev = sentinel;
+        sentinel.next.next = sentinel;
+        sentinel.prev = sentinel.next;
+        size += 1;
+    }
+
     public LinkedListDeque() {
-        sentinel = new Node(null, null, null);
         sentinel.prev = sentinel;
         sentinel.next = sentinel;
     }
