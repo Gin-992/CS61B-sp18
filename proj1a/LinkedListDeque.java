@@ -1,8 +1,8 @@
 public class LinkedListDeque<T> {
-    public class Node {
-        public T item;
-        public Node prev;
-        public Node next;
+    private class Node {
+        T item;
+        Node prev;
+        Node next;
 
         // 构造函数不能写返回值类型
         public Node(T i, Node p, Node n) {
@@ -12,10 +12,10 @@ public class LinkedListDeque<T> {
         }
     }
 
-    private Node sentinel = new Node(null, null, null);
-    private int size = 0;
+    private Node sentinel;
+    private int size;
 
-    // 构造函数不能写返回值类型
+    /*
     public LinkedListDeque(T t) {
         sentinel.next = new Node(t, null, null);
         sentinel.next.prev = sentinel;
@@ -23,10 +23,14 @@ public class LinkedListDeque<T> {
         sentinel.prev = sentinel.next;
         size += 1;
     }
+    */
 
+    // 构造函数不能写返回值类型
     public LinkedListDeque() {
+        sentinel = new Node(null, null, null);
         sentinel.prev = sentinel;
         sentinel.next = sentinel;
+        size = 0;
     }
 
     public void addFirst(T item) {
@@ -48,11 +52,7 @@ public class LinkedListDeque<T> {
     }
 
     public boolean isEmpty() {
-        if (sentinel.next == sentinel && sentinel.prev == sentinel) {
-            return true;
-        } else {
-            return false;
-        }
+        return size == 0;
     }
 
     public int size() {
@@ -69,6 +69,7 @@ public class LinkedListDeque<T> {
                 p = p.next;
             }
         }
+        System.out.println();
     }
 
     public T removeFirst() {
@@ -99,17 +100,17 @@ public class LinkedListDeque<T> {
         }
 
         Node p = sentinel;
-        for (int i = 0; i <= index; i ++) {
+        for (int i = 0; i <= index; i++) {
             p = p.next;
         }
         return p.item;
     }
 
-    private T helper (Node p, int index) {
+    private T helper(Node p, int index) {
         if (index == 0) {
             return p.item;
         }
-        return helper (p.next, index - 1);
+        return helper(p.next, index - 1);
     }
 
     public T getRecursive(int index) {
