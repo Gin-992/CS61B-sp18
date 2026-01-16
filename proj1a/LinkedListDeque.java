@@ -1,4 +1,6 @@
 public class LinkedListDeque<T> {
+
+    // 外部类可以无条件访问其内部类的所有成员
     private class Node {
         T item;
         Node prev;
