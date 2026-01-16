@@ -1,8 +1,8 @@
 public class ArrayDeque<T> {
     private int size;
     private T[] items;
-    int nextFirst;
-    int nextLast;
+    private int nextFirst;
+    private int nextLast;
 
     public ArrayDeque() {
         size = 0;
@@ -26,7 +26,7 @@ public class ArrayDeque<T> {
 
             System.arraycopy(items, head, a, 0, lengthOfFirstChunk);
             System.arraycopy(items, 0, a, lengthOfFirstChunk, lengthOfSecondChunk);
-        }else{
+        } else {
             System.arraycopy(items, head, a, 0, size);
         }
 
@@ -44,7 +44,7 @@ public class ArrayDeque<T> {
         items[nextFirst] = item;
         if (nextFirst - 1 < 0) {
             nextFirst = items.length - 1;
-        }else{
+        } else {
             nextFirst -= 1;
         }
     }
@@ -58,7 +58,7 @@ public class ArrayDeque<T> {
         items[nextLast] = item;
         if (nextLast + 1 == items.length) {
             nextLast = 0;
-        }else{
+        } else {
             nextLast += 1;
         }
     }
@@ -79,10 +79,8 @@ public class ArrayDeque<T> {
     }
 
     public T removeFirst() {
-        if (size == 0) {
+        if (isEmpty()) {
             return null;
-        }else{
-            size -= 1;
         }
 
         if (items.length >= 16 && (double) size / items.length < 0.25) {
@@ -94,19 +92,18 @@ public class ArrayDeque<T> {
             returnItem = items[0];
             items[0] = null;
             nextFirst = 0;
-        }else {
+        } else {
             returnItem = items[nextFirst + 1];
             items[nextFirst + 1] = null;
             nextFirst += 1;
         }
+        size -= 1;
         return returnItem;
     }
 
     public T removeLast() {
-        if (size == 0) {
+        if (isEmpty()) {
             return null;
-        }else{
-            size -= 1;
         }
 
         if (items.length >= 16 && (double) size / items.length < 0.25) {
@@ -118,11 +115,12 @@ public class ArrayDeque<T> {
             returnItem = items[items.length - 1];
             items[items.length - 1] = null;
             nextLast = items.length - 1;
-        }else {
+        } else {
             returnItem = items[nextLast - 1];
             items[nextLast - 1] = null;
             nextLast -= 1;
         }
+        size -= 1;
         return returnItem;
     }
 
@@ -133,7 +131,7 @@ public class ArrayDeque<T> {
 
         if (nextFirst + 1 + index >= items.length) {
             return items[nextFirst + 1 + index - items.length];
-        }else{
+        } else {
             return items[index + nextFirst + 1];
         }
     }
