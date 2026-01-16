@@ -129,10 +129,7 @@ public class ArrayDeque<T> {
             return null;
         }
 
-        if (nextFirst + 1 + index >= items.length) {
-            return items[nextFirst + 1 + index - items.length];
-        } else {
-            return items[index + nextFirst + 1];
-        }
+        int realIndex = (nextFirst + 1 + index) % items.length;
+        return items[realIndex];
     }
 }
