@@ -16,6 +16,7 @@ public class NBody {
         return allPlanets;
     }
 
+    // static 法则：不需要实例化也能调用的函数。反之，不加 static 的函数则一定要先实例化。
     public static void main (String[] args) {
         double T = Double.parseDouble(args[0]);
         double dt = Double.parseDouble(args[1]);
