@@ -1,4 +1,5 @@
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -69,5 +70,21 @@ public class IntListTest {
     /** If you're running this from the command line, you'll need
       * to add a main method. See ArithmeticTest.java for an
       * example. */
+
+    @Test
+    public void testReverse() {
+        // 破坏性：没有造新房子，而是把旧房子之间的路给拆了重铺了。
+        IntList A = IntList.of(1, 2, 3);
+        IntList reversed = IntList.reverse(A);
+
+        IntList exp = IntList.of(3, 2, 1);
+        // 不仅仅比较地址，它通常会比较整个链表的内容。
+        assertEquals(exp, reversed);
+
+        assertNotEquals(exp, A);
+
+        // 我断言，当我给 reverse 方法传入 null 时，它必须给我返回 null。
+        assertNull(IntList.reverse(null));
+    }
 
 }
