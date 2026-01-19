@@ -4,6 +4,7 @@ import org.junit.Test;
 public class TestArrayDequeGold {
     @Test
     public void testArrayDeque() {
+        // Java 的泛型尖括号 < > 里面只能填 Reference Types
         StudentArrayDeque<Integer> sad1 = new StudentArrayDeque<>();
         ArrayDequeSolution<Integer> sad2 = new ArrayDequeSolution<>();
 
@@ -23,17 +24,18 @@ public class TestArrayDequeGold {
                 log = log + '\n' + "addLast(" + randVal + ")";
 
             } else if (numberBetweenZeroAndOne < 0.75) {
-                if (sad1.isEmpty() && sad2.isEmpty()) {
+                if (sad1.isEmpty() || sad2.isEmpty()) {
                     continue;
                 }
 
+                // Integer 可以指向 null（即不指向任何对象），int 则必须填满 0 和 1
                 Integer x = sad1.removeFirst();
                 Integer y = sad2.removeFirst();
                 log = log + '\n' + "removeFirst()";
 
                 assertEquals(log, y, x);
             } else {
-                if (sad1.isEmpty() && sad2.isEmpty()) {
+                if (sad1.isEmpty() || sad2.isEmpty()) {
                     continue;
                 }
 
