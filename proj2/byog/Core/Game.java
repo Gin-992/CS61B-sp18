@@ -205,9 +205,17 @@ public class Game {
             }
         }
 
-        int roomNum = random.nextInt(15) + 15;
+        int roomNum = random.nextInt(10) + 15;
         List<Room> rooms = new ArrayList<>();
+
+        int maxFailures = 1000;
+        int currentFailures = 0;
+
         while (rooms.size() < roomNum) {
+            if (currentFailures > maxFailures) {
+                break;
+            }
+
             int w = random.nextInt(8) + 6;
             int h = random.nextInt(8) + 6;
             int x = random.nextInt(WIDTH - w);
@@ -224,6 +232,8 @@ public class Game {
 
             if (isAdd) {
                 rooms.add(new Room(x, y, w, h));
+            } else {
+                currentFailures++;
             }
         }
 
