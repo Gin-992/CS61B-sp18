@@ -6,7 +6,6 @@ import byog.TileEngine.Tileset;
 import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -48,8 +47,10 @@ public class Game {
                     while (!inputSeed) {
                         StdDraw.clear(Color.black);
                         StdDraw.setPenColor(Color.white);
-                        StdDraw.text((double) WIDTH / 2, (double) HEIGHT / 2, "Enter Seed: " + seedStr);
-                        StdDraw.text((double) WIDTH / 2, (double) HEIGHT / 2 - 2, "Press S to start");
+                        StdDraw.text((double) WIDTH / 2, (double) HEIGHT / 2,
+                                "Enter Seed: " + seedStr);
+                        StdDraw.text((double) WIDTH / 2, (double) HEIGHT / 2 - 2,
+                                "Press S to start");
                         StdDraw.show();
 
                         if (StdDraw.hasNextKeyTyped()) {
