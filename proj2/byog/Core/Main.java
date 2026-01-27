@@ -9,13 +9,15 @@ import byog.TileEngine.TETile;
  */
 public class Main {
     public static void main(String[] args) {
+        /**
         Game game = new Game();
         TERenderer ter = new TERenderer();
         ter.initialize(Game.WIDTH, Game.HEIGHT);
         TETile[][] world = game.playWithInputString("N999S");
         ter.renderFrame(world);
+         */
 
-        /**
+
         if (args.length > 1) {
             System.out.println("Can only have one argument - the input string");
             System.exit(0);
@@ -27,6 +29,5 @@ public class Main {
             Game game = new Game();
             game.playWithKeyboard();
         }
-         */
     }
 }

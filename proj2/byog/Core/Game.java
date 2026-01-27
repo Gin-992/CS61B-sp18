@@ -3,27 +3,74 @@ package byog.Core;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
+import edu.princeton.cs.introcs.StdDraw;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Game {
     TERenderer ter = new TERenderer();
-    /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 40;
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
      */
-    public void playWithKeyboard() {
+    private void draw() {
+        StdDraw.clear(Color.black);
+        StdDraw.setPenColor(Color.white);
+        StdDraw.text((double) WIDTH / 2, (double) HEIGHT * 0.75, "CS61B: The Game");
+        StdDraw.text((double) WIDTH / 2, (double) HEIGHT * 0.5, "New Game (N)");
+        StdDraw.text((double) WIDTH / 2, (double) HEIGHT * 0.5 - 2, "Load Game (L)");
+        StdDraw.text((double) WIDTH / 2, (double) HEIGHT * 0.5 - 4, "Quit (Q)");
+        StdDraw.show();
     }
 
 
+    public void playWithKeyboard() {
+        ter.initialize(WIDTH, HEIGHT);
+        draw();
 
+        boolean gameOver = false;
 
+        while (!gameOver) {
+            if (StdDraw.hasNextKeyTyped()) {
+                char key = StdDraw.nextKeyTyped();
+                key = Character.toLowerCase(key);
 
+                if (key == 'n') {
+                    boolean inputSeed = false;
+                    String seedStr = "";
+
+                    while (!inputSeed) {
+                        StdDraw.clear(Color.black);
+                        StdDraw.setPenColor(Color.white);
+                        StdDraw.text((double) WIDTH / 2, (double) HEIGHT / 2, "Enter Seed: " + seedStr);
+                        StdDraw.text((double) WIDTH / 2, (double) HEIGHT / 2 - 2, "Press S to start");
+                        StdDraw.show();
+
+                        if (StdDraw.hasNextKeyTyped()) {
+                            char num = StdDraw.nextKeyTyped();
+                            if (Character.isDigit(num)) {
+                                seedStr += num;
+                            } else if (num == 's' || num == 'S') {
+                                inputSeed = true;
+                            }
+                        }
+                    }
+                    TETile[][] world = generateWorld(Long.parseLong(seedStr));
+                    ter.renderFrame(world);
+                } else if (key == 'q') {
+                    gameOver = true;
+                    System.exit(0);
+                }
+            } else {
+                StdDraw.pause(20);
+            }
+        }
+    }
 
 
     private class Room {
@@ -149,7 +196,43 @@ public class Game {
         }
     }
 
+    private TETile[][] generateWorld(long seed) {
+        Random random = new Random(seed);
+        TETile[][] world = new TETile[WIDTH][HEIGHT];
+        for (int i = 0; i < WIDTH; i++) {
+            for (int j = 0; j < HEIGHT; j++) {
+                world[i][j] = Tileset.NOTHING;
+            }
+        }
 
+        int roomNum = random.nextInt(15) + 15;
+        List<Room> rooms = new ArrayList<>();
+        while (rooms.size() < roomNum) {
+            int w = random.nextInt(8) + 6;
+            int h = random.nextInt(8) + 6;
+            int x = random.nextInt(WIDTH - w);
+            int y = random.nextInt(HEIGHT - h);
+
+            Room newRoom = new Room(x, y, w, h);
+            boolean isAdd = true;
+            for (Room r : rooms) {
+                if (newRoom.isOverlapping(r)) {
+                    isAdd = false;
+                    break;
+                }
+            }
+
+            if (isAdd) {
+                rooms.add(new Room(x, y, w, h));
+            }
+        }
+
+        generateAllRooms(world, rooms);
+        generateAllHallways(world, rooms, random);
+        addWalls(world);
+
+        return world;
+    }
     /**
      * Method used for autograding and testing the game code. The input string will be a series
      * of characters (for example, "n123sswwdasdassadwas", "n123sss:q", "lwww". The game should
@@ -188,40 +271,7 @@ public class Game {
             throw new IllegalArgumentException("Please enter a numeric SEED");
         }
 
-        Random random = new Random(Long.parseLong(s));
-        TETile[][] world = new TETile[WIDTH][HEIGHT];
-        for (int i = 0; i < WIDTH; i++) {
-            for (int j = 0; j < HEIGHT; j++) {
-                world[i][j] = Tileset.NOTHING;
-            }
-        }
-
-        int roomNum = random.nextInt(15) + 15;
-        List<Room> rooms = new ArrayList<>();
-        while (rooms.size() < roomNum) {
-            int w = random.nextInt(8) + 6;
-            int h = random.nextInt(8) + 6;
-            int x = random.nextInt(WIDTH - w);
-            int y = random.nextInt(HEIGHT - h);
-
-            Room newRoom = new Room(x, y, w, h);
-            boolean isAdd = true;
-            for (Room r : rooms) {
-                if (newRoom.isOverlapping(r)) {
-                    isAdd = false;
-                    break;
-                }
-            }
-
-            if (isAdd) {
-                rooms.add(new Room(x, y, w, h));
-            }
-        }
-
-        generateAllRooms(world, rooms);
-        generateAllHallways(world, rooms, random);
-        addWalls(world);
-
+        TETile[][] world = generateWorld(Long.parseLong(s));
         return world;
     }
 }
