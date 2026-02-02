@@ -34,22 +34,30 @@ public class Game {
 
 
     private void move(TETile[][] world, char ori) {
-        if (ori == 'w' && world[playerX][playerX + 1] != Tileset.WALL) {
-            world[playerX][playerY] = Tileset.FLOOR;
-            playerY += 1;
-            world[playerX][playerY] = Tileset.PLAYER;
-        } else if (ori == 's' && world[playerX][playerY - 1] != Tileset.WALL) {
-            world[playerX][playerY] = Tileset.FLOOR;
-            playerY -= 1;
-            world[playerX][playerY] = Tileset.PLAYER;
-        } else if (ori == 'a' && world[playerX - 1][playerY] != Tileset.WALL) {
-            world[playerX][playerY] = Tileset.FLOOR;
-            playerX -= 1;
-            world[playerX][playerY] = Tileset.PLAYER;
-        } else if (ori == 'd' && world[playerX + 1][playerY] != Tileset.WALL) {
-            world[playerX][playerY] = Tileset.FLOOR;
-            playerX += 1;
-            world[playerX][playerY] = Tileset.PLAYER;
+        if (ori == 'w') {
+            if (playerY + 1 < HEIGHT && !world[playerX][playerY + 1].description().equals(Tileset.WALL.description())) {
+                world[playerX][playerY] = Tileset.FLOOR;
+                playerY += 1;
+                world[playerX][playerY] = Tileset.PLAYER;
+            }
+        } else if (ori == 's') {
+            if (playerY - 1 >= 0 && !world[playerX][playerY - 1].description().equals(Tileset.WALL.description())) {
+                world[playerX][playerY] = Tileset.FLOOR;
+                playerY -= 1;
+                world[playerX][playerY] = Tileset.PLAYER;
+            }
+        } else if (ori == 'a') {
+            if (playerX - 1 >= 0 && !world[playerX - 1][playerY].description().equals(Tileset.WALL.description())) {
+                world[playerX][playerY] = Tileset.FLOOR;
+                playerX -= 1;
+                world[playerX][playerY] = Tileset.PLAYER;
+            }
+        } else if (ori == 'd') {
+            if (playerX + 1 < WIDTH && !world[playerX + 1][playerY].description().equals(Tileset.WALL.description())) {
+                world[playerX][playerY] = Tileset.FLOOR;
+                playerX += 1;
+                world[playerX][playerY] = Tileset.PLAYER;
+            }
         }
     }
 
@@ -121,14 +129,14 @@ public class Game {
                         }
 
                         StdDraw.setPenColor(Color.white);
-                        if (world[mouseX][mouseY] == Tileset.WALL) {
-                            StdDraw.text(1, HEIGHT - 1, "WALL");
-                        } else if (world[mouseX][mouseY] == Tileset.FLOOR) {
-                            StdDraw.text(1, HEIGHT - 1, "FLOOR");
-                        } else if (world[mouseX][mouseY] == Tileset.PLAYER) {
-                            StdDraw.text(1, HEIGHT - 1, "PLAYER");
+                        if (world[mouseX][mouseY].equals(Tileset.WALL)) {
+                            StdDraw.text(2, HEIGHT - 1, "WALL");
+                        } else if (world[mouseX][mouseY].equals(Tileset.FLOOR)) {
+                            StdDraw.text(2, HEIGHT - 1, "FLOOR");
+                        } else if (world[mouseX][mouseY].equals(Tileset.PLAYER)) {
+                            StdDraw.text(2, HEIGHT - 1, "PLAYER");
                         } else {
-                            StdDraw.text(1, HEIGHT - 1, "NOTHING");
+                            StdDraw.text(2, HEIGHT - 1, "NOTHING");
                         }
                         StdDraw.show();
                     }
@@ -170,14 +178,14 @@ public class Game {
                         }
 
                         StdDraw.setPenColor(Color.white);
-                        if (world[mouseX][mouseY] == Tileset.WALL) {
-                            StdDraw.text(1, HEIGHT - 1, "WALL");
-                        } else if (world[mouseX][mouseY] == Tileset.FLOOR) {
-                            StdDraw.text(1, HEIGHT - 1, "FLOOR");
-                        } else if (world[mouseX][mouseY] == Tileset.PLAYER) {
-                            StdDraw.text(1, HEIGHT - 1, "PLAYER");
+                        if (world[mouseX][mouseY].equals(Tileset.WALL)) {
+                            StdDraw.text(2, HEIGHT - 1, "WALL");
+                        } else if (world[mouseX][mouseY].equals(Tileset.FLOOR)) {
+                            StdDraw.text(2, HEIGHT - 1, "FLOOR");
+                        } else if (world[mouseX][mouseY].equals(Tileset.PLAYER)) {
+                            StdDraw.text(2, HEIGHT - 1, "PLAYER");
                         } else {
-                            StdDraw.text(1, HEIGHT - 1, "NOTHING");
+                            StdDraw.text(2, HEIGHT - 1, "NOTHING");
                         }
                         StdDraw.show();
                     }
@@ -382,7 +390,7 @@ public class Game {
 
 
     private TETile[][] loadGame() {
-        File f = new File("./save_game.txt");
+        File f = new File("byog/Core/save_game.txt");
         if (!f.exists()) {
             System.exit(0);
         }
@@ -414,7 +422,7 @@ public class Game {
     }
 
     private void saveGame(TETile[][] world) {
-        File f = new File("./save_game.txt");
+        File f = new File("byog/Core/save_game.txt");
         try {
             if (!f.exists()) {
                 f.createNewFile();
@@ -438,58 +446,45 @@ public class Game {
 
 
     public TETile[][] playWithInputString(String input) {
-        if (input == null || input.isEmpty()) {
-            throw new IllegalArgumentException("Input string cannot be null or empty");
-        }
-
+        input = input.toLowerCase();
         char firstChar = input.charAt(0);
-        firstChar = Character.toLowerCase(firstChar);
+        TETile[][] world = null;
+        int index = 0;
 
-        if (firstChar != 'n' && firstChar != 'l') {
-            throw new IllegalArgumentException("The input must start with N or n");
+        if (firstChar == 'n') {
+            index = 1;
+            String s = "";
+            // 解析种子
+            while (index < input.length() && Character.isDigit(input.charAt(index))) {
+                s += input.charAt(index);
+                index++;
+            }
+            // 检查 S
+            if (index == input.length() || input.charAt(index) != 's') {
+                throw new IllegalArgumentException("Seed must be followed by S");
+            }
+            index++;
+            world = generateWorld(Long.parseLong(s));
+        } else if (firstChar == 'l') {
+            world = loadGame();
+            index = 1;
+        } else {
+            throw new IllegalArgumentException("Input must start with N or L");
         }
 
-        if (firstChar == 'l') {
-            return loadGame();
-        }
-
-        int index = 1;
-        String s = "";
-        while (index < input.length() && Character.isDigit(input.charAt(index))) {
-            char c = input.charAt(index);
-            s = s + c;
-            index += 1;
-        }
-
-        if (index == input.length() || (input.charAt(index) != 's' && input.charAt(index) != 'S')) {
-            throw new IllegalArgumentException("The seed must be followed by S or s");
-        }
-
-        if (s.isEmpty()) {
-            throw new IllegalArgumentException("Please enter a numeric SEED");
-        }
-
-        TETile[][] world = generateWorld(Long.parseLong(s));
-
-        index += 1;
+        // 统一处理移动逻辑
         for (int i = index; i < input.length(); i++) {
             char c = input.charAt(i);
-            c = Character.toLowerCase(c);
-            if (c != ':') {
-                move(world, c);
-            }
-
             if (c == ':') {
-                int cur = i;
-                cur += 1;
-                char cc = input.charAt(cur);
-                cc = Character.toLowerCase(cc);
-                if (cc == 'q') {
-                    saveGame(world);
-                    return world;
-                } else {
-                    throw new IllegalArgumentException("':' should be followed by 'q' or 'Q'");
+                if (i + 1 < input.length()) {
+                    char nextChar = Character.toLowerCase(input.charAt(i + 1));
+                    if (nextChar == 'q') {
+                        saveGame(world);
+                        return world;
+                    }
                 }
+            } else {
+                move(world, c);
             }
         }
         return world;
