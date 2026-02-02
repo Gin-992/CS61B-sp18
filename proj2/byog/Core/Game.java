@@ -359,12 +359,19 @@ public class Game {
 
 
     private TETile charToTile(char c) {
-        if (c == Tileset.WALL.character()) return Tileset.WALL;
-        if (c == Tileset.FLOOR.character()) return Tileset.FLOOR;
-        if (c == Tileset.PLAYER.character()) return Tileset.PLAYER;
-        if (c == Tileset.NOTHING.character()) return Tileset.NOTHING;
-        // 如果有其他种类的砖块（比如草地、水等），在这里加
-        return Tileset.NOTHING; // 默认值
+        if (c == Tileset.WALL.character()) {
+            return Tileset.WALL;
+        }
+        if (c == Tileset.FLOOR.character()) {
+            return Tileset.FLOOR;
+        }
+        if (c == Tileset.PLAYER.character()) {
+            return Tileset.PLAYER;
+        }
+        if (c == Tileset.NOTHING.character()) {
+            return Tileset.NOTHING;
+        }
+        return Tileset.NOTHING;
     }
 
     private TETile[][] loadGame() {
@@ -409,7 +416,7 @@ public class Game {
     }
 
     private void saveGame(TETile[][] world) {
-        File f = new File("byog/Core/save_game.txt");
+        File f = new File("./save_game.txt");
         try {
             if (!f.exists()) {
                 f.createNewFile();
