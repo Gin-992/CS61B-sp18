@@ -15,7 +15,6 @@ public class Main {
         ter.renderFrame(world);
          */
 
-
         if (args.length > 1) {
             System.out.println("Can only have one argument - the input string");
             System.exit(0);

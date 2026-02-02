@@ -5,6 +5,8 @@ import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 import edu.princeton.cs.introcs.StdDraw;
 
+import java.io.*;
+
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +16,13 @@ public class Game {
     TERenderer ter = new TERenderer();
     public static final int WIDTH = 80;
     public static final int HEIGHT = 40;
+    int playerX;
+    int playerY;
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
      */
-    private void draw() {
+    private void drawMenu() {
         StdDraw.clear(Color.black);
         StdDraw.setPenColor(Color.white);
         StdDraw.text((double) WIDTH / 2, (double) HEIGHT * 0.75, "CS61B: The Game");
@@ -29,13 +33,31 @@ public class Game {
     }
 
 
+    private void move(TETile[][] world, char ori) {
+        if (ori == 'w' && world[playerX][playerX + 1] != Tileset.WALL) {
+            world[playerX][playerY] = Tileset.FLOOR;
+            playerY += 1;
+            world[playerX][playerY] = Tileset.PLAYER;
+        } else if (ori == 's' && world[playerX][playerY - 1] != Tileset.WALL) {
+            world[playerX][playerY] = Tileset.FLOOR;
+            playerY -= 1;
+            world[playerX][playerY] = Tileset.PLAYER;
+        } else if (ori == 'a' && world[playerX - 1][playerY] != Tileset.WALL) {
+            world[playerX][playerY] = Tileset.FLOOR;
+            playerX -= 1;
+            world[playerX][playerY] = Tileset.PLAYER;
+        } else if (ori == 'd' && world[playerX + 1][playerY] != Tileset.WALL) {
+            world[playerX][playerY] = Tileset.FLOOR;
+            playerX += 1;
+            world[playerX][playerY] = Tileset.PLAYER;
+        }
+    }
+
     public void playWithKeyboard() {
         ter.initialize(WIDTH, HEIGHT);
-        draw();
+        drawMenu();
 
-        boolean gameOver = false;
-
-        while (!gameOver) {
+        while (true) {
             if (StdDraw.hasNextKeyTyped()) {
                 char key = StdDraw.nextKeyTyped();
                 key = Character.toLowerCase(key);
@@ -43,6 +65,7 @@ public class Game {
                 if (key == 'n') {
                     boolean inputSeed = false;
                     String seedStr = "";
+                    TETile[][] world = null;
 
                     while (!inputSeed) {
                         StdDraw.clear(Color.black);
@@ -58,24 +81,113 @@ public class Game {
                             if (Character.isDigit(num)) {
                                 seedStr += num;
                             } else if (num == 's' || num == 'S') {
-                                inputSeed = true;
+                                if (!seedStr.isEmpty()) {
+                                    world = generateWorld(Long.parseLong(seedStr));
+                                    ter.renderFrame(world);
+                                    inputSeed = true;
+                                }
                             }
                         }
                     }
-                    TETile[][] world = generateWorld(Long.parseLong(seedStr));
-                    ter.renderFrame(world);
+
+                    while (true) {
+                        // 处理键盘输入
+                        if (StdDraw.hasNextKeyTyped()) {
+                            char ori = StdDraw.nextKeyTyped();
+                            ori = Character.toLowerCase(ori);
+
+                            if (ori == 'w' || ori == 's' || ori == 'a' || ori == 'd') {
+                                move(world, ori);
+                            } else if (ori == ':') {
+                                while (true) {
+                                    if (StdDraw.hasNextKeyTyped()) {
+                                        char n = StdDraw.nextKeyTyped();
+                                        n = Character.toLowerCase(n);
+                                        if (n == 'q') {
+                                            saveGame(world);
+                                            System.exit(0);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        ter.renderFrame(world);
+
+                        // 处理 HUD
+                        int mouseX = (int) StdDraw.mouseX();
+                        int mouseY = (int) StdDraw.mouseY();
+                        if (mouseX > WIDTH - 1 || mouseY > HEIGHT - 1 || mouseX < 0 || mouseY < 0) {
+                            continue;
+                        }
+
+                        StdDraw.setPenColor(Color.white);
+                        if (world[mouseX][mouseY] == Tileset.WALL) {
+                            StdDraw.text(1, HEIGHT - 1, "WALL");
+                        } else if (world[mouseX][mouseY] == Tileset.FLOOR) {
+                            StdDraw.text(1, HEIGHT - 1, "FLOOR");
+                        } else if (world[mouseX][mouseY] == Tileset.PLAYER) {
+                            StdDraw.text(1, HEIGHT - 1, "PLAYER");
+                        } else {
+                            StdDraw.text(1, HEIGHT - 1, "NOTHING");
+                        }
+                        StdDraw.show();
+                    }
+
+
                 } else if (key == 'q') {
-                    gameOver = true;
                     System.exit(0);
+                } else if (key == 'l') {
+                    TETile[][] world = loadGame();
+
+                    while (true) {
+                        // 处理键盘输入
+                        if (StdDraw.hasNextKeyTyped()) {
+                            char ori = StdDraw.nextKeyTyped();
+                            ori = Character.toLowerCase(ori);
+
+                            if (ori == 'w' || ori == 's' || ori == 'a' || ori == 'd') {
+                                move(world, ori);
+                            } else if (ori == ':') {
+                                while (true) {
+                                    if (StdDraw.hasNextKeyTyped()) {
+                                        char n = StdDraw.nextKeyTyped();
+                                        n = Character.toLowerCase(n);
+                                        if (n == 'q') {
+                                            saveGame(world);
+                                            System.exit(0);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        ter.renderFrame(world);
+
+                        // 处理 HUD
+                        int mouseX = (int) StdDraw.mouseX();
+                        int mouseY = (int) StdDraw.mouseY();
+                        if (mouseX > WIDTH - 1 || mouseY > HEIGHT - 1 || mouseX < 0 || mouseY < 0) {
+                            continue;
+                        }
+
+                        StdDraw.setPenColor(Color.white);
+                        if (world[mouseX][mouseY] == Tileset.WALL) {
+                            StdDraw.text(1, HEIGHT - 1, "WALL");
+                        } else if (world[mouseX][mouseY] == Tileset.FLOOR) {
+                            StdDraw.text(1, HEIGHT - 1, "FLOOR");
+                        } else if (world[mouseX][mouseY] == Tileset.PLAYER) {
+                            StdDraw.text(1, HEIGHT - 1, "PLAYER");
+                        } else {
+                            StdDraw.text(1, HEIGHT - 1, "NOTHING");
+                        }
+                        StdDraw.show();
+                    }
                 }
-            } else {
-                StdDraw.pause(20);
             }
         }
     }
 
-
-    private class Room {
+    // 不访问外部变量的非静态成员（变量、方法）都要加上static
+    private static class Room {
         int x;
         int y;
         int w;
@@ -243,8 +355,87 @@ public class Game {
         generateAllHallways(world, rooms, random);
         addWalls(world);
 
+        int th = random.nextInt(rooms.size());
+        int[] playerXY = rooms.get(th).getCent();
+        playerX = playerXY[0];
+        playerY = playerXY[1];
+        world[playerX][playerY] = Tileset.PLAYER;
+
         return world;
     }
+
+    //  序列化是将对象状态转换为字节流的过程
+    private static class GameState implements Serializable {
+        // JVM 会为每个可序列化类关联一个版本号
+        // 验证已保存和已加载的对象是否具有相同的属性，从而确保序列化时兼容
+        private static final long serialVersionUID = 123123123L;
+        TETile[][] savedWorld;
+        int savedPlayerX;
+        int savedPlayerY;
+
+        public GameState(TETile[][] world, int x, int y) {
+            this.savedWorld = world;
+            this.savedPlayerX = x;
+            this.savedPlayerY = y;
+        }
+    }
+
+
+    private TETile[][] loadGame() {
+        File f = new File("./save_game.txt");
+        if (!f.exists()) {
+            System.exit(0);
+        }
+
+        TETile[][] world = null;
+        try {
+            FileInputStream fileInputStream = new FileInputStream(f);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+
+            GameState gs = (GameState) objectInputStream.readObject();
+            objectInputStream.close();
+            fileInputStream.close();
+
+            world = gs.savedWorld;
+            this.playerX = gs.savedPlayerX;
+            this.playerY = gs.savedPlayerY;
+        } catch (FileNotFoundException e) {
+            System.out.println("file not found");
+            System.exit(0);
+        } catch (IOException e) {
+            System.out.println(e);
+            System.exit(0);
+        } catch (ClassNotFoundException e) {
+            System.out.println("class not found");
+            System.exit(0);
+        }
+
+        return world;
+    }
+
+    private void saveGame(TETile[][] world) {
+        File f = new File("./save_game.txt");
+        try {
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+            FileOutputStream fileOutputStream = new FileOutputStream(f);
+            ObjectOutput objectOutput = new ObjectOutputStream(fileOutputStream);
+
+            GameState gs = new GameState(world, playerX, playerY);
+            objectOutput.writeObject(gs);
+
+            objectOutput.close();
+            fileOutputStream.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("file not found");
+            System.exit(0);
+        } catch (IOException e) {
+            System.out.println(e);
+            System.exit(0);
+        }
+    }
+
 
     public TETile[][] playWithInputString(String input) {
         if (input == null || input.isEmpty()) {
@@ -252,8 +443,14 @@ public class Game {
         }
 
         char firstChar = input.charAt(0);
-        if (firstChar != 'N' && firstChar != 'n') {
+        firstChar = Character.toLowerCase(firstChar);
+
+        if (firstChar != 'n' && firstChar != 'l') {
             throw new IllegalArgumentException("The input must start with N or n");
+        }
+
+        if (firstChar == 'l') {
+            return loadGame();
         }
 
         int index = 1;
@@ -273,6 +470,28 @@ public class Game {
         }
 
         TETile[][] world = generateWorld(Long.parseLong(s));
+
+        index += 1;
+        for (int i = index; i < input.length(); i++) {
+            char c = input.charAt(i);
+            c = Character.toLowerCase(c);
+            if (c != ':') {
+                move(world, c);
+            }
+
+            if (c == ':') {
+                int cur = i;
+                cur += 1;
+                char cc = input.charAt(cur);
+                cc = Character.toLowerCase(cc);
+                if (cc == 'q') {
+                    saveGame(world);
+                    return world;
+                } else {
+                    throw new IllegalArgumentException("':' should be followed by 'q' or 'Q'");
+                }
+            }
+        }
         return world;
     }
 }
