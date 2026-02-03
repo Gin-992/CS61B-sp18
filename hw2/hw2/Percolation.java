@@ -5,6 +5,7 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
     boolean[][] map;
     WeightedQuickUnionUF WQF;
+    WeightedQuickUnionUF rawWQF;
     int size;
     int openSites;
 
@@ -14,12 +15,8 @@ public class Percolation {
         }
 
         map = new boolean[N][N];
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                map[i][j] = false;
-            }
-        }
 
+        rawWQF = new WeightedQuickUnionUF(N * N + 1);
         WQF = new WeightedQuickUnionUF(N * N + 2);
         size = N;
         openSites = 0;
@@ -47,6 +44,7 @@ public class Percolation {
 
             if (row == 0) {
                 WQF.union(pos, 0);
+                rawWQF.union(pos, 0);
             }
 
             if (row == size - 1) {
@@ -55,15 +53,19 @@ public class Percolation {
 
             if (row - 1 >= 0 && map[row - 1][col]) {
                 WQF.union(pos, xyTo1D(row - 1, col));
+                rawWQF.union(pos, xyTo1D(row - 1, col));
             }
             if (row + 1 < size && map[row + 1][col]) {
                 WQF.union(pos, xyTo1D(row + 1, col));
+                rawWQF.union(pos, xyTo1D(row + 1, col));
             }
             if (col - 1 >= 0 && map[row][col - 1]) {
                 WQF.union(pos, xyTo1D(row, col - 1));
+                rawWQF.union(pos, xyTo1D(row, col - 1));
             }
             if (col + 1 < size && map[row][col + 1]) {
                 WQF.union(pos, xyTo1D(row, col + 1));
+                rawWQF.union(pos, xyTo1D(row, col + 1));
             }
         }
     }
@@ -75,7 +77,7 @@ public class Percolation {
 
     public boolean isFull(int row, int col) {
         isValid(row, col);
-        return WQF.connected(0, xyTo1D(row, col));
+        return rawWQF.connected(0, xyTo1D(row, col));
     }
 
     public int numberOfOpenSites() {
