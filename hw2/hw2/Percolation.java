@@ -3,123 +3,86 @@ package hw2;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-    private boolean[][] grid;
-    private WeightedQuickUnionUF uf;      // 用于判断系统是否渗透
-    private WeightedQuickUnionUF ufFull;  // 用于判断格子是否满水 (防止回流)
-    private int size;
-    private int topNode;
-    private int bottomNode;
-    private int openSiteCount;
+    boolean[][] map;
+    WeightedQuickUnionUF WQF;
+    int size;
+    int openSites;
 
-    // 构造函数：N <= 0 时抛出 IllegalArgumentException
     public Percolation(int N) {
         if (N <= 0) {
-            throw new IllegalArgumentException("N must be > 0");
-        }
-        this.size = N;
-        this.openSiteCount = 0;
-        this.grid = new boolean[N][N];
-
-        // 索引 0 到 N^2-1 是格子
-        int totalNodes = N * N;
-        this.topNode = totalNodes;
-        this.bottomNode = totalNodes + 1;
-
-        this.uf = new WeightedQuickUnionUF(totalNodes + 2);     // 带头带尾
-        this.ufFull = new WeightedQuickUnionUF(totalNodes + 1); // 只带头
-    }
-
-    // open 方法：越界时必须抛出 IndexOutOfBoundsException
-    public void open(int row, int col) {
-        validate(row, col); // 1. 必须先检查异常
-
-        if (grid[row][col]) { // 直接读数组，因为已经 validate 过了
-            return;
+            throw new IllegalArgumentException("Input should larger than 0.");
         }
 
-        // 2. 打开格子
-        grid[row][col] = true;
-        openSiteCount++;
-
-        int currentID = xyTo1D(row, col);
-
-        // 3. 连通虚拟顶部
-        if (row == 0) {
-            uf.union(currentID, topNode);
-            ufFull.union(currentID, topNode);
+        map = new boolean[N][N];
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                map[i][j] = false;
+            }
         }
 
-        // 4. 连通虚拟底部 (仅 uf)
-        if (row == size - 1) {
-            uf.union(currentID, bottomNode);
-        }
-
-        // 5. 连通四周邻居 (需要复用 validate 逻辑或者手动检查边界)
-        // 上
-        if (row > 0 && grid[row - 1][col]) {
-            int upID = xyTo1D(row - 1, col);
-            uf.union(currentID, upID);
-            ufFull.union(currentID, upID);
-        }
-        // 下
-        if (row < size - 1 && grid[row + 1][col]) {
-            int downID = xyTo1D(row + 1, col);
-            uf.union(currentID, downID);
-            ufFull.union(currentID, downID);
-        }
-        // 左
-        if (col > 0 && grid[row][col - 1]) {
-            int leftID = xyTo1D(row, col - 1);
-            uf.union(currentID, leftID);
-            ufFull.union(currentID, leftID);
-        }
-        // 右
-        if (col < size - 1 && grid[row][col + 1]) {
-            int rightID = xyTo1D(row, col + 1);
-            uf.union(currentID, rightID);
-            ufFull.union(currentID, rightID);
-        }
-    }
-
-    // isOpen 方法：越界时必须抛出 IndexOutOfBoundsException
-    public boolean isOpen(int row, int col) {
-        validate(row, col);
-        return grid[row][col];
-    }
-
-    // isFull 方法：越界时必须抛出 IndexOutOfBoundsException
-    public boolean isFull(int row, int col) {
-        validate(row, col);
-        if (!grid[row][col]) {
-            return false;
-        }
-        // 使用 ufFull 防止回流
-        return ufFull.connected(topNode, xyTo1D(row, col));
-    }
-
-    public int numberOfOpenSites() {
-        return openSiteCount;
-    }
-
-    public boolean percolates() {
-        if (size == 1) {
-            return grid[0][0];
-        }
-        return uf.connected(topNode, bottomNode);
-    }
-
-    // 辅助方法：统一处理异常抛出
-    private void validate(int row, int col) {
-        if (row < 0 || row >= size || col < 0 || col >= size) {
-            throw new IndexOutOfBoundsException("Index " + row + ", " + col + " is out of bounds");
-        }
+        WQF = new WeightedQuickUnionUF(N * N + 2);
+        size = N;
+        openSites = 0;
     }
 
     private int xyTo1D(int row, int col) {
-        return row * size + col;
+        return row * size + col + 1;
     }
 
-    public static void main(String[] args) {
-        // test
+    private void isValid(int row, int col) {
+        if (row < size && col < size && row >= 0 && col >= 0) {
+            return;
+        }
+        throw new IndexOutOfBoundsException("Crossed the boundary.");
+    }
+
+    public void open(int row, int col) {
+        isValid(row, col);
+
+        if (!isOpen(row, col)) {
+            map[row][col] = true;
+            openSites += 1;
+
+            int pos = xyTo1D(row, col);
+
+            if (row == 0) {
+                WQF.union(pos, 0);
+            }
+
+            if (row == size - 1) {
+                WQF.union(pos, size * size + 1);
+            }
+
+            if (row - 1 >= 0 && map[row - 1][col]) {
+                WQF.union(pos, xyTo1D(row - 1, col));
+            }
+            if (row + 1 < size && map[row + 1][col]) {
+                WQF.union(pos, xyTo1D(row + 1, col));
+            }
+            if (col - 1 >= 0 && map[row][col - 1]) {
+                WQF.union(pos, xyTo1D(row, col - 1));
+            }
+            if (col + 1 < size && map[row][col + 1]) {
+                WQF.union(pos, xyTo1D(row, col + 1));
+            }
+        }
+    }
+
+    public boolean isOpen(int row, int col) {
+        isValid(row, col);
+        return map[row][col];
+    }
+
+    public boolean isFull(int row, int col) {
+        isValid(row, col);
+        return WQF.connected(0, xyTo1D(row, col));
+    }
+
+    public int numberOfOpenSites() {
+        return openSites;
+    }
+
+    public boolean percolates() {
+        return WQF.connected(0, size * size + 1);
     }
 }
