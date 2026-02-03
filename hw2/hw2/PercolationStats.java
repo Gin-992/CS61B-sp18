@@ -23,8 +23,6 @@ public class PercolationStats {
             // 2. 持续打开格子直到系统连通
             while (!sys.percolates()) {
                 int row, col;
-                // 随机选择一个 blocked (未打开) 的格子
-                // 注意：如果之前的 Percolation 是 0-based 索引 (0 到 N-1)，这里正好匹配
                 do {
                     row = StdRandom.uniform(N);
                     col = StdRandom.uniform(N);
