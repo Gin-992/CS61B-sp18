@@ -3,11 +3,11 @@ package hw2;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-    boolean[][] map;
-    WeightedQuickUnionUF WQF;
-    WeightedQuickUnionUF rawWQF;
-    int size;
-    int openSites;
+    private boolean[][] map;
+    private WeightedQuickUnionUF WQF;
+    private WeightedQuickUnionUF rawWQF;
+    private int size;
+    private int openSites;
 
     public Percolation(int N) {
         if (N <= 0) {
@@ -86,5 +86,9 @@ public class Percolation {
 
     public boolean percolates() {
         return WQF.connected(0, size * size + 1);
+    }
+
+    public static void main(String[] arg) {
+        // To pass the test.
     }
 }
