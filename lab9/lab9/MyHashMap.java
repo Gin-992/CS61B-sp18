@@ -61,26 +61,36 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     /* Associates the specified value with the specified key in this map. */
     @Override
     public void put(K key, V value) {
-        if (get(key) != null) {
-            buckets[hash(key)].put(key, value);
+        int index = hash(key);
+
+        if (buckets[index].containsKey(key)) {
+            buckets[index].put(key, value);
             return;
         }
 
         if (loadFactor() > MAX_LF) {
-            ArrayMap<K, V>[] tmp = new ArrayMap[2 * buckets.length];
+            // 初始化数组内全是 null
+            ArrayMap<K, V>[] tmp = new ArrayMap[buckets.length * 2];
             for (int i = 0; i < tmp.length; i += 1) {
                 tmp[i] = new ArrayMap<>();
             }
 
             for (int i = 0; i < buckets.length; i++) {
-                for (K keys : buckets[i]) {
-                    tmp[Math.floorMod(keys.hashCode(), tmp.length)].put(keys, get(keys));
+                for (K keyInBucket : buckets[i]) {
+                    int newIndex;
+                    if (keyInBucket == null) {
+                        newIndex = 0;
+                    } else {
+                        newIndex = Math.floorMod(keyInBucket.hashCode(), tmp.length);
+                    }
+                    tmp[newIndex].put(keyInBucket, buckets[i].get(keyInBucket));
                 }
             }
             buckets = tmp;
+            index = hash(key);
         }
 
-        buckets[hash(key)].put(key, value);
+        buckets[index].put(key, value);
         size += 1;
     }
 
