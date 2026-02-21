@@ -13,6 +13,9 @@ public class ComplexOomage implements Oomage {
     public int hashCode() {
         int total = 0;
         for (int x : params) {
+            // 乘以 256 等同于二进制 左移 8 位
+            // int 只有 32 位
+            // 只有列表中的 最后 4 个数字 会影响最终的 hashCode
             total = total * 256;
             total = total + x;
         }

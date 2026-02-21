@@ -10,26 +10,38 @@ public class SimpleOomage implements Oomage {
     protected int blue;
 
     private static final double WIDTH = 0.01;
-    private static final boolean USE_PERFECT_HASH = false;
+    private static final boolean USE_PERFECT_HASH = true;
 
     @Override
     public boolean equals(Object o) {
-        // TODO: Write this method.
-        return false;
+        // 自反性
+        if (o == this) {
+            return true;
+        }
+        // 非空值
+        if (o == null) {
+            return false;
+        }
+        if (o.getClass() != this.getClass()) {
+            return false;
+        }
+
+        SimpleOomage tmp = (SimpleOomage) o;
+        return ((this.red == tmp.red) && (this.green == tmp.green) && (this.blue == tmp.blue));
     }
 
-    /* Uncomment this method after you've written
-       equals and failed the testHashCodeAndEqualsConsistency
-       test.
+    // 每当重写 equals 方法时，通常都需要重写 hashCode
+    // 原始为内存地址 -> 让两个 equal 的目标在一个桶里
     @Override
     public int hashCode() {
         if (!USE_PERFECT_HASH) {
             return red + green + blue;
         } else {
-            // TODO: Write a perfect hash function for Simple Oomages.
-            return 0;
+            // hashcode 返回的是 5 的倍数，在 bucket 数量为 5 倍数时分布集中
+            // 每个数先除以 5 使分布均匀
+            return red / 5 * 256 * 256 + green / 5 * 256 + blue / 5;
         }
-    }*/
+    }
 
     public SimpleOomage(int r, int g, int b) {
         if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
