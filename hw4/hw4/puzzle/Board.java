@@ -70,8 +70,11 @@ public class Board implements WorldState {
         int distance = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (tiles[i][j] == BLANK) continue; // 0 不参与计算
-                int expected = i * N + j + 1; // 目标值：(0,0)是1, (0,1)是2...
+                if (tiles[i][j] == BLANK) {
+                    continue;
+                }
+
+                int expected = i * N + j + 1;
                 if (tiles[i][j] != expected) {
                     distance++;
                 }
@@ -85,7 +88,9 @@ public class Board implements WorldState {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 int val = tiles[i][j];
-                if (val == BLANK) continue; // 0 不参与计算
+                if (val == BLANK) {
+                    continue;
+                }
 
                 int targetRow = (val - 1) / N;
                 int targetCol = (val - 1) % N;
@@ -101,23 +106,37 @@ public class Board implements WorldState {
     }
 
     public boolean equals(Object y) {
-        if (y == this) return true;
-        if (y == null || y.getClass() != this.getClass()) return false;
+        if (y == this) {
+            return true;
+        }
+
+        if (y == null || y.getClass() != this.getClass()) {
+            return false;
+        }
+
         Board other = (Board) y;
-        if (this.N != other.N) return false;
+        if (this.N != other.N) {
+            return false;
+        }
+
         // 深度比较数组
         return Arrays.deepEquals(this.tiles, other.tiles);
+    }
+
+    @Override
+    public int hashCode() {
+        // 遍历 tiles 里的每一个数字，生成一个整数
+        return Arrays.deepHashCode(tiles);
     }
 
     /** Returns the string representation of the board. 
       * Uncomment this method. */
     public String toString() {
         StringBuilder s = new StringBuilder();
-        int N = size();
         s.append(N + "\n");
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                s.append(String.format("%2d ", tileAt(i,j)));
+                s.append(String.format("%2d ", tileAt(i, j)));
             }
             s.append("\n");
         }

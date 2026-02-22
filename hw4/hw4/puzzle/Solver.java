@@ -15,7 +15,7 @@ public class Solver {
         SearchNode pre;
         int priority;
 
-        SearchNode (WorldState c, SearchNode p, int m) {
+        SearchNode(WorldState c, SearchNode p, int m) {
             cur = c;
             pre = p;
             move = m;
