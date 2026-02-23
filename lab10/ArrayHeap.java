@@ -41,7 +41,6 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      * Returns the index of the node that is the parent of the node at i.
      */
     private static int parentIndex(int i) {
-        // 整数除法丢弃小数部分
         return i / 2;
     }
 
@@ -118,18 +117,18 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
         validateSinkSwimArg(index);
 
-        while (leftIndex(index) < size + 1) {
+        while (leftIndex(index) <= size) {
             int minIndex = leftIndex(index);
 
-            if (rightIndex(index) < size + 1 && min(minIndex, rightIndex(index)) == rightIndex(index)) {
+            if (rightIndex(index) <= size && min(minIndex, rightIndex(index)) == rightIndex(index)) {
                 minIndex = rightIndex(index);
             }
 
-            if (min(minIndex, index) == index) {
+            if (min(index, minIndex) == index) {
                 break;
             }
 
-            swap(minIndex, index);
+            swap(index, minIndex);
             index = minIndex;
         }
     }
@@ -156,10 +155,10 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public T peek() {
-        if (size > 0) {
-            return contents[1].item();
+        if (size == 0) {
+            return null;
         }
-        return null;
+        return contents[1].item();
     }
 
     /**
@@ -177,17 +176,16 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
             return null;
         }
 
-        T minItem = contents[1].item();
-
+        T reItem = contents[1].item();
         swap(1, size);
         contents[size] = null;
         size -= 1;
 
-        if (size > 0) {
+        if (size > 1) {
             sink(1);
         }
 
-        return minItem;
+        return reItem;
     }
 
     /**
@@ -210,12 +208,10 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     @Override
     public void changePriority(T item, double priority) {
         for (int i = 1; i <= size; i++) {
-            if (contents[i].myItem.equals(item)) {
+            if (contents[i].item().equals(item)) {
                 contents[i].myPriority = priority;
-
-                swim(i);
                 sink(i);
-                return;
+                swim(i);
             }
         }
     }

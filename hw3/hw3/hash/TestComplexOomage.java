@@ -36,7 +36,7 @@ public class TestComplexOomage {
     @Test
     public void testWithDeadlyParams() {
         List<Oomage> deadlyList = new ArrayList<>();
-        
+
         int N = 100;
         for (int i = 0; i < N; i++) {
             List<Integer> params = new ArrayList<>();
