@@ -1,9 +1,7 @@
 package lab11.graphs;
 
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.IndexMinPQ;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  *  @author Josh Hug
@@ -42,11 +40,12 @@ public class MazeAStarPath extends MazeExplorer {
 
     /** Performs an A star search from vertex s. */
     private void astar(int s) {
+        // 外在优先级
         IndexMinPQ<Integer> pq = new IndexMinPQ<>(maze.V());
-
         pq.insert(s, distTo[s] + h(s));
 
         while (!pq.isEmpty()) {
+            // best first search
             int v = pq.delMin();
 
             marked[v] = true;
@@ -59,6 +58,7 @@ public class MazeAStarPath extends MazeExplorer {
 
             for (int w : maze.adj(v)) {
                 if (!marked[w]) {
+                    // edge relaxation: add edge to the SPT if it yields better distance.
                     if (distTo[v] + 1 < distTo[w]) {
                         distTo[w] = distTo[v] + 1;
                         edgeTo[w] = v;

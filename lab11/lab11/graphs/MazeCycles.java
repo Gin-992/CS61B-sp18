@@ -10,7 +10,7 @@ public class MazeCycles extends MazeExplorer {
     public boolean[] marked;
     */
     private Maze maze;
-    private boolean findCycle = false;
+    private boolean cycleFound = false;
     private int[] cameFrom;
 
     public MazeCycles(Maze m) {
@@ -22,7 +22,7 @@ public class MazeCycles extends MazeExplorer {
     @Override
     public void solve() {
         marked[0] = true;
-        distTo[0] = 0;
+        announce();
         cameFrom[0] = 0;
         dfs(0);
     }
@@ -31,16 +31,17 @@ public class MazeCycles extends MazeExplorer {
         for (int w : maze.adj(s)) {
             if (!marked[w]) {
                 marked[w] = true;
-                cameFrom[w] = s;
-                distTo[w] = distTo[s] + 1;
                 announce();
+                cameFrom[w] = s;
                 dfs(w);
 
-                if (findCycle) {
+                if (cycleFound) {
                     return;
                 }
-            } else if (w != cameFrom[s] && marked[w]) {
-                findCycle = true;
+            }
+
+            else if (marked[w] && cameFrom[s] != w) {
+                cycleFound = true;
 
                 edgeTo[w] = s;
                 announce();
