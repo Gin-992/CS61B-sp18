@@ -1,6 +1,5 @@
 package hw3.hash;
 
-import edu.princeton.cs.algs4.In;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -35,7 +34,7 @@ public class TestSimpleOomage {
 
                     int code = ooA.hashCode();
                     if (hashCode.contains(code)) {
-                        throw new AssertionError("A collision occurred. Two different Oomages have the same hash code: "
+                        throw new AssertionError("A collision occurred: "
                                 + code + " at RGB values: " + r + ", " + g + ", " + b);
                     } else {
                         hashCode.add(code);
