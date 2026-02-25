@@ -1,4 +1,5 @@
 import edu.princeton.cs.algs4.Queue;
+import org.junit.Assert;
 
 public class MergeSort {
     /**
@@ -34,8 +35,15 @@ public class MergeSort {
     /** Returns a queue of queues that each contain one item from items. */
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items) {
-        // Your code here!
-        return null;
+        Queue<Queue<Item>> singleItemQueues = new Queue<>();
+
+        for (Item i : items) {
+            Queue<Item> temp = new Queue<>();
+            temp.enqueue(i);
+            singleItemQueues.enqueue(temp);
+        }
+
+        return singleItemQueues;
     }
 
     /**
@@ -53,14 +61,45 @@ public class MergeSort {
      */
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2) {
-        // Your code here!
-        return null;
+        Queue<Item> mergedQueue = new Queue<>();
+
+        while (!q1.isEmpty() || !q2.isEmpty()) {
+            mergedQueue.enqueue(getMin(q1, q2));
+        }
+
+        return mergedQueue;
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
-        // Your code here!
-        return items;
+        if (items.isEmpty()) {
+            return null;
+        }
+
+        Queue<Queue<Item>> queues = makeSingleItemQueues(items);
+
+        while (queues.size() > 1) {
+            queues.enqueue(mergeSortedQueues(queues.dequeue(), queues.dequeue()));
+        }
+
+        return queues.peek();
+    }
+
+    public static void main(String[] args) {
+        Queue<String> students = new Queue<String>();
+        students.enqueue("Alice");
+        students.enqueue("Vanessa");
+        students.enqueue("Ethan");
+        Queue<String> actual = MergeSort.mergeSort((students));
+
+        Queue<String> expected = new Queue<>();
+        expected.enqueue("Alice");
+        expected.enqueue("Ethan");
+        expected.enqueue("Vanessa");
+
+        System.out.println(students);
+        System.out.println(expected);
+        System.out.println(actual);
     }
 }
