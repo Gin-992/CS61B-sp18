@@ -40,10 +40,10 @@ public class SeamCarver {
         int yUp = (y == 0) ? height() - 1 : y - 1;
         int yDown = (y == height() - 1) ? 0 : y + 1;
 
-        Color left = picture().get(xLeft, y);
-        Color right = picture().get(xRight, y);
-        Color up = picture().get(x, yUp);
-        Color down = picture().get(x, yDown);
+        Color left = p.get(xLeft, y);
+        Color right = p.get(xRight, y);
+        Color up = p.get(x, yUp);
+        Color down = p.get(x, yDown);
 
         // 幂函数：power function
         double dx2 = Math.pow(left.getRed() - right.getRed(), 2)
@@ -59,7 +59,7 @@ public class SeamCarver {
 
     // sequence of indices for horizontal seam
     public int[] findHorizontalSeam() {
-        Picture raw = picture();
+        Picture raw = p;
         Picture tran = new Picture(raw.height(), raw.width());
 
         for (int i = 0; i < width(); i++) {
