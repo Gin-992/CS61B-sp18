@@ -1,17 +1,21 @@
 import edu.princeton.cs.algs4.Picture;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class SeamCarver {
     private Picture p;
 
     public SeamCarver(Picture picture) {
-        p = picture;
+        if (picture == null) {
+            throw new IllegalArgumentException("picture is null");
+        }
+
+        this.p = new Picture(picture);
     }
 
     // current picture
     public Picture picture() {
-        return p;
+        return new Picture(p);
     }
 
     // width of current picture
@@ -42,13 +46,13 @@ public class SeamCarver {
         Color down = picture().get(x, yDown);
 
         // 幂函数：power function
-        double dx2 = Math.pow(left.getRed() - right.getRed(), 2) +
-                Math.pow(left.getGreen() - right.getGreen(), 2) +
-                Math.pow(left.getBlue() - right.getBlue(), 2);
+        double dx2 = Math.pow(left.getRed() - right.getRed(), 2)
+                + Math.pow(left.getGreen() - right.getGreen(), 2)
+                + Math.pow(left.getBlue() - right.getBlue(), 2);
 
-        double dy2 = Math.pow(up.getRed() - down.getRed(), 2) +
-                Math.pow(up.getGreen() - down.getGreen(), 2) +
-                Math.pow(up.getBlue() - down.getBlue(), 2);
+        double dy2 = Math.pow(up.getRed() - down.getRed(), 2)
+                + Math.pow(up.getGreen() - down.getGreen(), 2)
+                + Math.pow(up.getBlue() - down.getBlue(), 2);
 
         return dx2 + dy2;
     }
