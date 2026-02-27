@@ -81,6 +81,7 @@ public class RadixSort {
             startIndex[code + 1]++;
         }
 
+        // 深拷贝
         int cur = 0;
         for (String s : sorted) {
             asciis[cur] = s;
