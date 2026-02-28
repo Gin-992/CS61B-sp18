@@ -7,7 +7,7 @@ import java.util.Map;
 public class BinaryTrie implements Serializable {
     Node root;
 
-    private class Node implements Comparable<Node> {
+    private class Node implements Comparable<Node>, Serializable {
         char val;
         int frequency;
         Node left;
@@ -45,10 +45,8 @@ public class BinaryTrie implements Serializable {
 
     public Match longestPrefixMatch(BitSequence querySequence) {
         Node cur = root;
-
         for (int i = 0; i < querySequence.length(); i++) {
             int bit = querySequence.bitAt(i);
-
             if (bit == 0) {
                 cur = cur.left;
             } else {
@@ -59,7 +57,6 @@ public class BinaryTrie implements Serializable {
                 return new Match(querySequence.firstNBits(i + 1), cur.val);
             }
         }
-
         return null;
     }
 
