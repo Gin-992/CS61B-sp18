@@ -1,3 +1,5 @@
+import edu.princeton.cs.algs4.In;
+
 public class Trie {
     public Node root;
 
@@ -11,31 +13,37 @@ public class Trie {
         root = new Node();
         In in = new In(dictPath);
         while (in.hasNextLine()) {
-            String word = in.readLine();
-            add(word);
+            String rawWord = in.readLine();
+            // 清洗并添加单词
+            add(rawWord);
         }
     }
 
-    private void add(String word) {
+    private void add(String rawWord) {
+        String cleanWord = rawWord.toLowerCase();
+        if (cleanWord.length() < 3) return;
+
+        for (int i = 0; i < cleanWord.length(); i++) {
+            char c = cleanWord.charAt(i);
+            if (c < 'a' || c > 'z') {
+                return; // 发现非法字符，整个单词都不加入
+            }
+        }
+
         Node cur = root;
-        for (int i = 0; i < word.length(); i++) {
-            char c = word.charAt(i);
-            int index = c - 'a';
-
-            if (index < 0 || index >= 26) continue;
-
-            if(cur.next[index] == null) {
+        for (int i = 0; i < cleanWord.length(); i++) {
+            int index = cleanWord.charAt(i) - 'a';
+            if (cur.next[index] == null) {
                 cur.next[index] = new Node();
             }
             cur = cur.next[index];
         }
         cur.isWord = true;
-        cur.word = word;
+        cur.word = cleanWord;
     }
 
     public Node match(Node n, char c) {
-        int index = c - 'a';
-        if (index < 0 || index >= 26) return null;
-        return n.next[index];
+        if (c < 'a' || c > 'z') return null;
+        return n.next[c - 'a'];
     }
 }
