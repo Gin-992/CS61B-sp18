@@ -15,7 +15,7 @@ public class TestClorus {
         Clorus c2 = new Clorus(2);
         c.attack(c2);
 
-        assertEquals(4, c.energy(), 2);
+        assertEquals(4, c.energy(), 0.01);
     }
 
     @Test
@@ -24,8 +24,8 @@ public class TestClorus {
         Clorus child = c.replicate();
 
         assertNotSame(child, c);
-        assertEquals(1, c.energy(), 1);
-        assertEquals(1, child.energy(), 1);
+        assertEquals(1, c.energy(), 0.01);
+        assertEquals(1, child.energy(), 0.01);
     }
 
     @Test

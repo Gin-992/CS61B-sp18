@@ -40,8 +40,8 @@ public class TestPlip {
         Plip child = p.replicate();
 
         assertNotSame(child, p);
-        assertEquals(1, p.energy(), 1);
-        assertEquals(1, child.energy(), 1);
+        assertEquals(1, p.energy(), 0.01);
+        assertEquals(1, child.energy(), 0.01);
     }
 
     @Test

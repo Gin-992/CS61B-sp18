@@ -24,7 +24,7 @@ public class Clorus extends Creature {
 
     /** creates plip with energy equal to E. */
     public Clorus(double e) {
-        super("plip");
+        super("clorus");
         r = 34;
         g = 0;
         b = 231;
@@ -98,7 +98,7 @@ public class Clorus extends Creature {
             return new Action(Action.ActionType.ATTACK, moveDir);
         }
 
-        if (this.energy > 1.0) {
+        if (this.energy >= 1.0) {
             Direction moveDir = HugLifeUtils.randomEntry(empties);
             return new Action(Action.ActionType.REPLICATE, moveDir);
         }
