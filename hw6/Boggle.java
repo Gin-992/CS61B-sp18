@@ -7,6 +7,8 @@ public class Boggle {
     
     // File path of dictionary file
     static String dictPath = "words.txt";
+    private static Trie trie = null;
+    private static String loadedPath = null;
 
     /**
      * Solves a Boggle puzzle.
@@ -19,6 +21,20 @@ public class Boggle {
      *         have them in ascending alphabetical order.
      */
     public static List<String> solve(int k, String boardFilePath) {
+        if (k <= 0) {
+            throw new IllegalArgumentException("k must be positive");
+        }
+
+        if (trie == null || !dictPath.equals(loadedPath)) {
+            java.io.File f = new java.io.File(dictPath);
+            if (!f.exists()) {
+                throw new IllegalArgumentException("Dictionary not found");
+            }
+
+            trie = new Trie(dictPath);
+            loadedPath = dictPath;
+        }
+
         char[][] board = load(boardFilePath);
         Trie trie = new Trie(dictPath);
         Set<String> words = new HashSet<>();
@@ -46,6 +62,11 @@ public class Boggle {
     }
 
     private static char[][] load(String boardFilePath) {
+        java.io.File file = new java.io.File(boardFilePath);
+        if (!file.exists()) {
+            throw new IllegalArgumentException("Board file not found");
+        }
+
         In in = new In(boardFilePath);
         String[] allWords = in.readAllLines();
 

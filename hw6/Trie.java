@@ -29,11 +29,11 @@ public class Trie {
         for (int i = 0; i < N; i++) {
             char c = word.charAt(i);
             char cc = Character.toLowerCase(c);
+            if (cc < 'a' || cc > 'z') {
+                continue;
+            }
 
             int index = cc - 'a';
-            if (cc < 'a' || cc > 'z') {
-                return;
-            }
             if (cur.liked[index] == null) {
                 cur.liked[index] = new Node();
             }
