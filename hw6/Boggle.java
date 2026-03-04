@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,13 +20,25 @@ public class Boggle {
      *         have them in ascending alphabetical order.
      */
     public static List<String> solve(int k, String boardFilePath) {
+        if (k <= 0) {
+            throw new IllegalArgumentException("k must be positive");
+        }
+
+        File dictFile = new File(dictPath);
+        if (!dictFile.exists()) {
+            throw new IllegalArgumentException("Dictionary file does not exist");
+        }
+
         char[][] board = load(boardFilePath);
         Trie trie = new Trie(dictPath);
         Set<String> words = new HashSet<>();
 
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[0].length; j++) {
-                boolean[][] visited = new boolean[board.length][board[0].length];
+        int rows = board.length;
+        int cols = board[0].length;
+        boolean[][] visited = new boolean[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+
                 dfs(board, i, j, trie.root, visited, words);
             }
         }
