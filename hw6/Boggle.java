@@ -26,12 +26,7 @@ public class Boggle {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
                 boolean[][] visited = new boolean[board.length][board[0].length];
-                char c = board[i][j];
-                int index = c - 'a';
-
-                if (trie.root.liked[index] != null) {
-                    dfs(board, i, j, trie.root, visited, words);
-                }
+                dfs(board, i, j, trie.root, visited, words);
             }
         }
 
@@ -91,7 +86,7 @@ public class Boggle {
         }
 
         visited[i][j] = true;
-        if (next.isWord) {
+        if (next.isWord && next.word.length() >= 3) {
             words.add(next.word);
         }
 

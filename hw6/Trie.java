@@ -42,7 +42,7 @@ public class Trie {
         }
 
         cur.isWord = true;
-        cur.word = word;
+        cur.word = word.toLowerCase();
     }
 
     public boolean contains(String word) {
