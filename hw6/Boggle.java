@@ -19,64 +19,60 @@ public class Boggle {
      *         have them in ascending alphabetical order.
      */
     public static List<String> solve(int k, String boardFilePath) {
-        if (k <= 0) {
-            throw new IllegalArgumentException("k must be positive");
-        }
-
+        char[][] board = load(boardFilePath);
         Trie trie = new Trie(dictPath);
-        char[][] board = loadBoard(boardFilePath);
-
-        int N = board.length;
-        int M = board[0].length;
-        boolean[][] visited = new boolean[N][M];
-
         Set<String> words = new HashSet<>();
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                dfs(board, i, j, trie.root, visited, words);
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                boolean[][] visited = new boolean[board.length][board[0].length];
+                char c = board[i][j];
+                int index = c - 'a';
+
+                if (trie.root.liked[index] != null) {
+                    dfs(board, i, j, trie.root.liked[index], visited, words);
+                }
             }
         }
 
-        List<String> sortedWords = new ArrayList<>(words);
-        sortedWords.sort((a, b) -> {
-            int lenDiff = b.length() - a.length();
-            if (lenDiff != 0) {
-                return lenDiff;
+        List<String> reWords = new ArrayList<>(words);
+
+        reWords.sort((a, b) -> {
+            if (b.length() != a.length()) {
+                return b.length() - a.length();
             }
-            // 首字母
             return a.compareTo(b);
         });
 
-        int limit = Math.min(k, sortedWords.size());
-        return sortedWords.subList(0, limit);
+        if (reWords.size() > k) {
+            return reWords.subList(0, k);
+        }
+        return reWords;
     }
 
-    private static char[][] loadBoard(String path) {
-        In in = new In(path);
-        if (!in.exists()) {
-            throw new IllegalArgumentException("Board file not found");
-        }
+    private static char[][] load(String boardFilePath) {
+        In in = new In(boardFilePath);
+        String[] allWords = in.readAllLines();
 
-        String[] lines = in.readAllLines();
-        int rows = lines.length;
-        int cols = lines[0].length();
-
+        int rows = allWords.length;
+        int cols = allWords[0].length();
         char[][] board = new char[rows][cols];
 
         for (int i = 0; i < rows; i++) {
-            String line = lines[i];
-            if (line.length() != cols) {
-                throw new IllegalArgumentException("Board is not rectangular");
+            if (allWords[i].length() != cols) {
+                throw new IllegalArgumentException("Board should be rectangle");
             }
-            for (int j = 0; j < cols; j++) {
-                board[i][j] = lines[i].charAt(j);
+
+            for (int j = 0; j < allWords[i].length(); j++) {
+                char c = Character.toLowerCase(allWords[i].charAt(j));
+                board[i][j] = c;
             }
         }
 
         return board;
     }
 
-    private static void dfs(char[][] board, int i, int j, Trie.Node currNode,
+    private static void dfs(char[][] board, int i, int j, Trie.Node node,
                             boolean[][] visited, Set<String> words) {
         if (i < 0 || i >= board.length || j < 0 || j >= board[0].length) {
             return;
@@ -87,29 +83,26 @@ public class Boggle {
         }
 
         char c = board[i][j];
-
-        Trie.Node nextNode = currNode.next[c - 'a'];
-
-        if (nextNode == null) {
+        int index = Character.toLowerCase(c) - 'a';
+        Trie.Node next = node.liked[index];
+        // 剪枝
+        if (next == null) {
             return;
         }
 
-        if (nextNode.isWord) {
-            if (nextNode.word.length() >= 3) {
-                words.add(nextNode.word);
-            }
-        }
-
         visited[i][j] = true;
-
-        for (int rowOffset = -1; rowOffset <= 1; rowOffset++) {
-            for (int colOffset = -1; colOffset <= 1; colOffset++) {
-                if (rowOffset == 0 && colOffset == 0) {
-                    continue;
-                }
-                dfs(board, i + rowOffset, j + colOffset, nextNode, visited, words);
-            }
+        if (next.isWord) {
+            words.add(next.word);
         }
+
+        dfs(board, i + 1, j, next, visited, words);
+        dfs(board, i - 1, j, next, visited, words);
+        dfs(board, i, j + 1, next, visited, words);
+        dfs(board, i, j - 1, next, visited, words);
+        dfs(board, i + 1, j + 1, next, visited, words);
+        dfs(board, i - 1, j - 1, next, visited, words);
+        dfs(board, i - 1, j + 1, next, visited, words);
+        dfs(board, i + 1, j - 1, next, visited, words);
 
         visited[i][j] = false;
     }
