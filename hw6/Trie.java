@@ -30,7 +30,7 @@ public class Trie {
             char c = word.charAt(i);
             char cc = Character.toLowerCase(c);
             if (cc < 'a' || cc > 'z') {
-                continue;
+                return;
             }
 
             int index = cc - 'a';
