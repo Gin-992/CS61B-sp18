@@ -30,7 +30,7 @@ public class Boggle {
                 int index = c - 'a';
 
                 if (trie.root.liked[index] != null) {
-                    dfs(board, i, j, trie.root.liked[index], visited, words);
+                    dfs(board, i, j, trie.root, visited, words);
                 }
             }
         }
@@ -83,7 +83,7 @@ public class Boggle {
         }
 
         char c = board[i][j];
-        int index = Character.toLowerCase(c) - 'a';
+        int index = c - 'a';
         Trie.Node next = node.liked[index];
         // 剪枝
         if (next == null) {
