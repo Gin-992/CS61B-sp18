@@ -20,6 +20,7 @@ hs_err_pid*
 .fuse_hidden*
 .directory
 .Trash-*
+.idea
 .nfs*
 *.DS_Store
 .AppleDouble
