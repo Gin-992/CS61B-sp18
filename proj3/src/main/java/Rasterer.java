@@ -43,10 +43,13 @@ public class Rasterer {
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
         Map<String, Object> results = new HashMap<>();
-
-        if (params.get("ullon") >= params.get("lrlon") || params.get("ullat") <= params.get("lrlat") ||
-                params.get("ullon") > MapServer.ROOT_LRLON || params.get("lrlon") < MapServer.ROOT_ULLON ||
-                params.get("ullat") < MapServer.ROOT_LRLAT || params.get("lrlat") > MapServer.ROOT_ULLAT) {
+        
+        if (params.get("ullon") >= params.get("lrlon")
+                || params.get("ullat") <= params.get("lrlat")
+                || params.get("ullon") > MapServer.ROOT_LRLON
+                || params.get("lrlon") < MapServer.ROOT_ULLON
+                || params.get("ullat") < MapServer.ROOT_LRLAT
+                || params.get("lrlat") > MapServer.ROOT_ULLAT) {
 
             results.put("query_success", false);
             results.put("render_grid", new String[0][0]);
@@ -58,13 +61,16 @@ public class Rasterer {
             return results;
         }
 
-        double LonDPP = (params.get("lrlon") - params.get("ullon")) / params.get("w");
+        double lonDPP = (params.get("lrlon") - params.get("ullon")) / params.get("w");
 
         int depth = 0;
-        double curLonDPP = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * Math.pow(2, 7));
+        double curLonDPP = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON)
+                / (MapServer.TILE_SIZE * Math.pow(2, 7));
+
         while (depth < 7) {
-            double cur = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * Math.pow(2, depth));
-            if (cur <= LonDPP) {
+            double cur = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON)
+                    / (MapServer.TILE_SIZE * Math.pow(2, depth));
+            if (cur <= lonDPP) {
                 curLonDPP = cur;
                 break;
             }
@@ -74,36 +80,36 @@ public class Rasterer {
         int maxIndex = (int) (Math.pow(2, depth) - 1);
 
         double lonPerTile = curLonDPP * MapServer.TILE_SIZE;
-        int ul_x = (int) ((params.get("ullon") - MapServer.ROOT_ULLON) / lonPerTile);
-        int lr_x = (int) ((params.get("lrlon") - MapServer.ROOT_ULLON) / lonPerTile);
+        int ulX = (int) ((params.get("ullon") - MapServer.ROOT_ULLON) / lonPerTile);
+        int lrX = (int) ((params.get("lrlon") - MapServer.ROOT_ULLON) / lonPerTile);
 
         double latPerTile = (MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT) / Math.pow(2, depth);
-        int ul_y = (int) ((MapServer.ROOT_ULLAT - params.get("ullat")) / latPerTile);
-        int lr_y = (int) ((MapServer.ROOT_ULLAT - params.get("lrlat")) / latPerTile);
+        int ulY = (int) ((MapServer.ROOT_ULLAT - params.get("ullat")) / latPerTile);
+        int lrY = (int) ((MapServer.ROOT_ULLAT - params.get("lrlat")) / latPerTile);
 
-        ul_x = Math.max(0, Math.min(ul_x, maxIndex));
-        lr_x = Math.max(0, Math.min(lr_x, maxIndex));
-        ul_y = Math.max(0, Math.min(ul_y, maxIndex));
-        lr_y = Math.max(0, Math.min(lr_y, maxIndex));
+        ulX = Math.max(0, Math.min(ulX, maxIndex));
+        lrX = Math.max(0, Math.min(lrX, maxIndex));
+        ulY = Math.max(0, Math.min(ulY, maxIndex));
+        lrY = Math.max(0, Math.min(lrY, maxIndex));
 
-        String[][] images = new String[lr_y - ul_y + 1][lr_x - ul_x + 1];
+        String[][] images = new String[lrY - ulY + 1][lrX - ulX + 1];
 
-        for (int j = ul_y; j <= lr_y; j++) {
-            for (int i = ul_x; i <= lr_x; i++) {
-                images[j - ul_y][i - ul_x] = "d" + depth + "_x" + i + "_y" + j + ".png";
+        for (int j = ulY; j <= lrY; j++) {
+            for (int i = ulX; i <= lrX; i++) {
+                images[j - ulY][i - ulX] = "d" + depth + "_x" + i + "_y" + j + ".png";
             }
         }
 
-        double ul_lon = MapServer.ROOT_ULLON + ul_x * lonPerTile;
-        double ul_lat = MapServer.ROOT_ULLAT - ul_y * latPerTile;
-        double lr_lon = MapServer.ROOT_ULLON + (lr_x + 1) * lonPerTile;
-        double lr_lat = MapServer.ROOT_ULLAT - (lr_y + 1) * latPerTile;
+        double ulLon = MapServer.ROOT_ULLON + ulX * lonPerTile;
+        double ulLat = MapServer.ROOT_ULLAT - ulY * latPerTile;
+        double lrLon = MapServer.ROOT_ULLON + (lrX + 1) * lonPerTile;
+        double lrLat = MapServer.ROOT_ULLAT - (lrY + 1) * latPerTile;
 
         results.put("render_grid", images);
-        results.put("raster_ul_lon", ul_lon);
-        results.put("raster_ul_lat", ul_lat);
-        results.put("raster_lr_lon", lr_lon);
-        results.put("raster_lr_lat", lr_lat);
+        results.put("raster_ul_lon", ulLon);
+        results.put("raster_ul_lat", ulLat);
+        results.put("raster_lr_lon", lrLon);
+        results.put("raster_lr_lat", lrLat);
         results.put("depth", depth);
         results.put("query_success", true);
 
