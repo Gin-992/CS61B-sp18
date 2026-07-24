@@ -1,5 +1,4 @@
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +11,26 @@ import java.util.regex.Pattern;
  * down to the priority you use to order your vertices.
  */
 public class Router {
+
+    private static class SearchNode implements Comparable<SearchNode> {
+        long id;
+        double distFromStart;
+        double priority;
+        SearchNode prev;
+
+        SearchNode(long id, double distFromStart, double priority, SearchNode prev) {
+            this.id = id;
+            this.distFromStart = distFromStart;
+            this.priority = priority;
+            this.prev = prev;
+        }
+
+        @Override
+        public int compareTo(SearchNode o) {
+            return Double.compare(this.priority, o.priority);
+        }
+    }
+
     /**
      * Return a List of longs representing the shortest path from the node
      * closest to a start location and the node closest to the destination
@@ -25,7 +44,42 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        return null; // FIXME
+        long stNodeID = g.closest(stlon, stlat);
+        long desNodeID = g.closest(destlon, destlat);
+
+        Set<Long> visited = new HashSet<>();
+        PriorityQueue<SearchNode> PQ = new PriorityQueue<>();
+        PQ.add(new SearchNode(stNodeID, 0.0, g.distance(stNodeID, desNodeID), null));
+
+        while (!PQ.isEmpty()) {
+            SearchNode min = PQ.poll();
+            if (visited.contains(min.id)) {
+                continue;
+            }
+
+            visited.add(min.id);
+
+            if (min.id == desNodeID) {
+                List<Long> path = new ArrayList<>();
+                SearchNode cur = min;
+
+                while (cur != null) {
+                    path.add(cur.id);
+                    cur = cur.prev;
+                }
+
+                Collections.reverse(path);
+                return path;
+            }
+
+            for (Long id : g.adjacent(min.id)) {
+                if (!visited.contains(id)) {
+                    PQ.add(new SearchNode(id, min.distFromStart + g.distance(min.id, id),
+                            min.distFromStart + g.distance(min.id, id) + g.distance(id, desNodeID), min));
+                }
+            }
+        }
+        return new ArrayList<>();
     }
 
     /**
@@ -37,7 +91,7 @@ public class Router {
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null; // FIXME
+        return null;
     }
 
 

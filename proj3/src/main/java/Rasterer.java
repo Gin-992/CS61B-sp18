@@ -43,7 +43,7 @@ public class Rasterer {
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
         Map<String, Object> results = new HashMap<>();
-        
+
         if (params.get("ullon") >= params.get("lrlon")
                 || params.get("ullat") <= params.get("lrlat")
                 || params.get("ullon") > MapServer.ROOT_LRLON
