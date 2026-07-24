@@ -1,4 +1,10 @@
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.PriorityQueue;
+import java.util.Objects;
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,11 +54,11 @@ public class Router {
         long desNodeID = g.closest(destlon, destlat);
 
         Set<Long> visited = new HashSet<>();
-        PriorityQueue<SearchNode> PQ = new PriorityQueue<>();
-        PQ.add(new SearchNode(stNodeID, 0.0, g.distance(stNodeID, desNodeID), null));
+        PriorityQueue<SearchNode> pq = new PriorityQueue<>();
+        pq.add(new SearchNode(stNodeID, 0.0, g.distance(stNodeID, desNodeID), null));
 
-        while (!PQ.isEmpty()) {
-            SearchNode min = PQ.poll();
+        while (!pq.isEmpty()) {
+            SearchNode min = pq.poll();
             if (visited.contains(min.id)) {
                 continue;
             }
@@ -74,8 +80,9 @@ public class Router {
 
             for (Long id : g.adjacent(min.id)) {
                 if (!visited.contains(id)) {
-                    PQ.add(new SearchNode(id, min.distFromStart + g.distance(min.id, id),
-                            min.distFromStart + g.distance(min.id, id) + g.distance(id, desNodeID), min));
+                    pq.add(new SearchNode(id, min.distFromStart + g.distance(min.id, id),
+                            min.distFromStart + g.distance(min.id, id)
+                                    + g.distance(id, desNodeID), min));
                 }
             }
         }

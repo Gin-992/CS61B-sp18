@@ -52,7 +52,7 @@ public class GraphDB {
         ArrayList<Long> adj;
         String name;
 
-        Node (long id, double lat, double lon) {
+        Node(long id, double lat, double lon) {
             this.id = id;
             this.lat = lat;
             this.lon = lon;
@@ -62,13 +62,13 @@ public class GraphDB {
 
     private Map<Long, Node> nodes = new HashMap<>();
 
-    public void addNode (Node n) {
+    public void addNode(Node n) {
         if (!nodes.containsKey(n.id)) {
             nodes.put(n.id, n);
         }
     }
 
-    public void addEdge (long v, long w) {
+    public void addEdge(long v, long w) {
         if (nodes.containsKey(v) && nodes.containsKey(w)) {
             nodes.get(v).adj.add(w);
             nodes.get(w).adj.add(v);

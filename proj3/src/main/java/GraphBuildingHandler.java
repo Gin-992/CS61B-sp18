@@ -123,7 +123,7 @@ public class GraphBuildingHandler extends DefaultHandler {
         if (qName.equals("way")) {
             if (isValidWay) {
                 for (int i = 0; i < currentWayNodes.size() - 1; i++) {
-                    g.addEdge(currentWayNodes.get(i), currentWayNodes.get(i+1));
+                    g.addEdge(currentWayNodes.get(i), currentWayNodes.get(i + 1));
                 }
             }
 
