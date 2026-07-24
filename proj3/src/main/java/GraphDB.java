@@ -61,6 +61,7 @@ public class GraphDB {
     }
 
     private Map<Long, Node> nodes = new HashMap<>();
+    private Map<String, String> roadName = new HashMap<>();
 
     public void addNode(Node n) {
         if (!nodes.containsKey(n.id)) {
@@ -141,6 +142,19 @@ public class GraphDB {
         a += Math.cos(phi1) * Math.cos(phi2) * Math.sin(dlambda / 2.0) * Math.sin(dlambda / 2.0);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return 3963 * c;
+    }
+
+    public String getWay(long v, long w) {
+        String edgeKey = Math.min(v, w) + "-" + Math.max(v, w);
+        if (roadName.containsKey(edgeKey)) {
+            return roadName.get(edgeKey);
+        }
+        return "";
+    }
+
+    public void addRoadName(long v, long w, String name) {
+        String edgeKey = Math.min(v, w) + "-" + Math.max(v, w);
+        roadName.put(edgeKey, name);
     }
 
     /**

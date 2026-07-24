@@ -98,7 +98,59 @@ public class Router {
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null;
+        List<NavigationDirection> navDir = new ArrayList<>();
+        if (route == null || route.size() < 2) {
+            return navDir;
+        }
+
+        NavigationDirection cur = new NavigationDirection();
+        cur.direction = NavigationDirection.START;
+        cur.way = g.getWay(route.get(0), route.get(1));
+        cur.distance = g.distance(route.get(0), route.get(1));
+
+        for (int i = 1; i < route.size() - 1; i++) {
+            long curNode = route.get(i);
+            long nexNode = route.get(i + 1);
+
+            String roadName = g.getWay(curNode, nexNode);
+            if (roadName.equals(cur.way)) {
+                cur.distance += g.distance(route.get(i), route.get(i + 1));
+            } else {
+                navDir.add(cur);
+
+                cur = new NavigationDirection();
+                cur.way = roadName;
+                cur.distance = g.distance(curNode, nexNode);
+
+                long preNode = route.get(i - 1);
+                double diffAngle = g.bearing(curNode, nexNode) - g.bearing(preNode, curNode);
+                if (diffAngle > 180) {
+                    diffAngle -= 360;
+                }
+                if (diffAngle < -180) {
+                    diffAngle += 360;
+                }
+
+                if (diffAngle <= 15 && diffAngle >= -15) {
+                    cur.direction = NavigationDirection.STRAIGHT;
+                } else if (diffAngle <= 30 && diffAngle > 15) {
+                    cur.direction = NavigationDirection.SLIGHT_RIGHT;
+                } else if (diffAngle >= -30 && diffAngle < -15) {
+                    cur.direction = NavigationDirection.SLIGHT_LEFT;
+                } else if (diffAngle <= 100 && diffAngle > 30) {
+                    cur.direction = NavigationDirection.RIGHT;
+                } else if (diffAngle >= -100 && diffAngle < -30) {
+                    cur.direction = NavigationDirection.LEFT;
+                } else if (diffAngle > 100) {
+                    cur.direction = NavigationDirection.SHARP_RIGHT;
+                } else if (diffAngle < -100) {
+                    cur.direction = NavigationDirection.SHARP_LEFT;
+                }
+            }
+        }
+        navDir.add(cur);
+
+        return navDir;
     }
 
 

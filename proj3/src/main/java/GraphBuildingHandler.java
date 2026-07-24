@@ -42,7 +42,7 @@ public class GraphBuildingHandler extends DefaultHandler {
     private long lastNodeId;
     private ArrayList<Long> currentWayNodes = new ArrayList<>();
     private boolean isValidWay = false;
-
+    private String currentWayName = "";
 
     /**
      * Create a new GraphBuildingHandler.
@@ -87,6 +87,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             activeState = "way";
             currentWayNodes.clear();
             isValidWay = false;
+            currentWayName = "";
         } else if (activeState.equals("way") && qName.equals("nd")) {
             String idStr = attributes.getValue("ref");
             long id = Long.parseLong(idStr);
@@ -99,6 +100,8 @@ public class GraphBuildingHandler extends DefaultHandler {
                 if (ALLOWED_HIGHWAY_TYPES.contains(v)) {
                     isValidWay = true;
                 }
+            } else if (k.equals("name")) {
+                currentWayName = v;
             }
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
                 .equals("name")) {
@@ -124,6 +127,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             if (isValidWay) {
                 for (int i = 0; i < currentWayNodes.size() - 1; i++) {
                     g.addEdge(currentWayNodes.get(i), currentWayNodes.get(i + 1));
+                    g.addRoadName(currentWayNodes.get(i), currentWayNodes.get(i + 1), currentWayName);
                 }
             }
 
