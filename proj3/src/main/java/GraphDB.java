@@ -60,7 +60,7 @@ public class GraphDB {
     private Map<Long, Node> nodes = new HashMap<>();
     private Map<String, String> roadName = new HashMap<>();
     private Trie trie = new Trie();
-    public Map<String, List<Node>> searchMap = new HashMap<>();
+    private Map<String, List<Node>> searchMap = new HashMap<>();
 
     public void addNode(Node n) {
         if (!nodes.containsKey(n.id)) {
@@ -90,9 +90,28 @@ public class GraphDB {
         }
     }
 
-    public List<String> getLocationByPrefix(String prefix) {
+    public List<String> getLocationsByPrefix(String prefix) {
         String cleanedPrefix = cleanString(prefix);
         return trie.getKeysByPrefix(cleanedPrefix);
+    }
+
+    public List<Map<String, Object>> getLocations(String locationName) {
+        String cleanedName = cleanString(locationName);
+
+        if (searchMap.containsKey(cleanedName)) {
+            List<Map<String, Object>> results = new ArrayList<>();
+            for (GraphDB.Node n : searchMap.get(cleanedName)) {
+                Map<String, Object> location = new HashMap<>();
+                location.put("lat", n.lat);
+                location.put("lon", n.lon);
+                location.put("name", n.name);
+                location.put("id", n.id);
+                results.add(location);
+            }
+            return results;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     /**

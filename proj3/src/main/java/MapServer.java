@@ -280,7 +280,7 @@ public class MapServer {
      * cleaned <code>prefix</code>.
      */
     public static List<String> getLocationsByPrefix(String prefix) {
-        return graph.getLocationByPrefix(prefix);
+        return graph.getLocationsByPrefix(prefix);
     }
 
     /**
@@ -296,22 +296,7 @@ public class MapServer {
      * "id" : Number, The id of the node. <br>
      */
     public static List<Map<String, Object>> getLocations(String locationName) {
-        String cleanedName = GraphDB.cleanString(locationName);
-        
-        if (graph.searchMap.containsKey(cleanedName)) {
-            List<Map<String, Object>> results = new ArrayList<>();
-            for (GraphDB.Node n : graph.searchMap.get(cleanedName)) {
-                Map<String, Object> location = new HashMap<>();
-                location.put("lat", n.lat);
-                location.put("lon", n.lon);
-                location.put("name", n.name);
-                location.put("id", n.id);
-                results.add(location);
-            }
-            return results;
-        } else {
-            return new ArrayList<>();
-        }
+        return graph.getLocations(locationName);
     }
 
     /**
