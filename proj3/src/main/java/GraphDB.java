@@ -6,10 +6,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -62,6 +59,8 @@ public class GraphDB {
 
     private Map<Long, Node> nodes = new HashMap<>();
     private Map<String, String> roadName = new HashMap<>();
+    private Trie trie = new Trie();
+    public Map<String, List<Node>> searchMap = new HashMap<>();
 
     public void addNode(Node n) {
         if (!nodes.containsKey(n.id)) {
@@ -74,6 +73,26 @@ public class GraphDB {
             nodes.get(v).adj.add(w);
             nodes.get(w).adj.add(v);
         }
+    }
+
+    public void addLocationName(String ogName, Node n) {
+        String cleanedName = cleanString(ogName);
+        if (!cleanedName.isEmpty()) {
+            trie.put(cleanedName, ogName);
+        }
+
+        if (searchMap.containsKey(cleanedName)) {
+            searchMap.get(cleanedName).add(n);
+        } else {
+            List<Node> locationNode = new ArrayList<>();
+            locationNode.add(n);
+            searchMap.put(cleanedName, locationNode);
+        }
+    }
+
+    public List<String> getLocationByPrefix(String prefix) {
+        String cleanedPrefix = cleanString(prefix);
+        return trie.getKeysByPrefix(cleanedPrefix);
     }
 
     /**

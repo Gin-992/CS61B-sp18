@@ -4,12 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
@@ -176,7 +171,7 @@ public class MapServer {
      * Requires that all input parameters are doubles.
      * @param req HTTP Request.
      * @param requiredParams TestParams to validate.
-     * @return A populated map of input parameter to it's numerical value.
+     * @return A populated map of input parameter to its numerical value.
      */
     private static HashMap<String, Double> getRequestParams(
             spark.Request req, String[] requiredParams) {
@@ -285,7 +280,7 @@ public class MapServer {
      * cleaned <code>prefix</code>.
      */
     public static List<String> getLocationsByPrefix(String prefix) {
-        return new LinkedList<>();
+        return graph.getLocationByPrefix(prefix);
     }
 
     /**
@@ -301,7 +296,22 @@ public class MapServer {
      * "id" : Number, The id of the node. <br>
      */
     public static List<Map<String, Object>> getLocations(String locationName) {
-        return new LinkedList<>();
+        String cleanedName = GraphDB.cleanString(locationName);
+        
+        if (graph.searchMap.containsKey(cleanedName)) {
+            List<Map<String, Object>> results = new ArrayList<>();
+            for (GraphDB.Node n : graph.searchMap.get(cleanedName)) {
+                Map<String, Object> location = new HashMap<>();
+                location.put("lat", n.lat);
+                location.put("lon", n.lon);
+                location.put("name", n.name);
+                location.put("id", n.id);
+                results.add(location);
+            }
+            return results;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     /**
